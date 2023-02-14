@@ -1,9 +1,11 @@
 |-- videoSystem
+    |-- .gitignore
     |-- app.js // 入口文件
     |-- directoryList.md
     |-- package.json
     |-- README.md
     |-- yarn.lock
+    |-- 接口文档（示例）.md
     |-- config // 配置信息
     |   |-- config.default.js
     |-- controller // 接口的逻辑处理
