@@ -9,7 +9,7 @@ router
     res.send('/user')
   })
   .post('/register', validator.register, userController.register)
-  .get('/list', userController.userList)
+  .get('/lists', userController.userList)
   .delete('/', userController.deleteUser)
 
 module.exports = router

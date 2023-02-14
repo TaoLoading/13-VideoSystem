@@ -7,7 +7,7 @@ router
   .get('/', (req, res) => {
     res.send('/video')
   })
-  .get('/list', videoController.videoList)
+  .get('/lists', videoController.videoList)
   .delete('/', videoController.deleteVideo)
 
 module.exports = router
