@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const md5 = require('md5')
 
 const userModel = new mongoose.Schema({
   username: {
@@ -7,7 +8,9 @@ const userModel = new mongoose.Schema({
   },
   password: {
     type: String,
-    require: true
+    require: true,
+    set: val => md5(val), // 加密
+    select: false // 查询时不返回该字段
   },
   phone: {
     type: String,
