@@ -29,6 +29,3 @@
         |-- video.js
 
 ```
-
-### 用到的部分插件
-1. express-validator：express的中间件，验证输入信息

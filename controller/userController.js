@@ -5,7 +5,10 @@ const { createToken } = require('../utils/jwt')
 exports.register = async (req, res) => {
   const userModel = new User(req.body)
   const dbBack = await userModel.save()
-  res.status(201).json(dbBack)
+  const user = dbBack.toJSON()
+  // 删除返回值中的password
+  delete user.password
+  res.status(201).json({ user })
 }
 
 // 登录

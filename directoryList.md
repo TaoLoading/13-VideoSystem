@@ -20,6 +20,8 @@
     |   |-- index.js
     |   |-- userModel.js
     |-- router // 路由配置
-        |-- index.js
-        |-- user.js
-        |-- video.js
+    |   |-- index.js
+    |   |-- user.js
+    |   |-- video.js
+    |-- utils // 工具函数
+        |-- jwt.js

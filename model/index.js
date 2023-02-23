@@ -1,9 +1,10 @@
 const mongoose = require('mongoose')
 const userModel = require('./userModel')
+const { mongoPath } = require('../config/config.default')
 
 const main = async () => {
   mongoose.set('strictQuery', false)
-  await mongoose.connect('mongodb://localhost:27017/express_video')
+  await mongoose.connect(mongoPath)
 }
 
 main()
@@ -11,7 +12,7 @@ main()
     console.log('连接成功')
   })
   .catch(err => {
-    console.log('连接失败', err)
+    console.log('连接失败，原因是：', err)
   })
 
 // 导出模型
