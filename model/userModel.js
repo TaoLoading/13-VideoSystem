@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 const md5 = require('md5')
+const baseModel = require('./baseModel')
 
 const userModel = new mongoose.Schema({
   username: {
@@ -20,18 +21,22 @@ const userModel = new mongoose.Schema({
     type: String,
     require: true
   },
+  // 头像
   image: {
     type: String,
     default: null
   },
-  createAt: {
-    type: Date,
-    default: Date.now()
+  // 频道封面
+  cover: {
+    type: String,
+    default: null
   },
-  updateAt: {
-    type: Date,
-    default: Date.now()
-  }
+  // 频道描述信息
+  description: {
+    type: String,
+    default: null
+  },
+  ...baseModel
 })
 
 module.exports = userModel

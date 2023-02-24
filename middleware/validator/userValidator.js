@@ -39,3 +39,29 @@ module.exports.login = errorBack([
       }
     }).bail()
 ])
+
+module.exports.update = errorBack([
+  body('email')
+    .custom(async val => {
+      console.log('111', val)
+      const emailValidate = await User.findOne({ email: val })
+      console.log('222', emailValidate)
+      if (emailValidate) {
+        return Promise.reject('邮箱已经被注册')
+      }
+    }).bail(),
+  body('username')
+    .custom(async val => {
+      const nameValidate = await User.findOne({ username: val })
+      if (nameValidate) {
+        return Promise.reject('用户已经被注册')
+      }
+    }).bail(),
+  body('phone')
+    .custom(async val => {
+      const phoneValidate = await User.findOne({ phone: val })
+      if (phoneValidate) {
+        return Promise.reject('手机已经被注册')
+      }
+    }).bail()
+])

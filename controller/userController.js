@@ -13,7 +13,6 @@ exports.register = async (req, res) => {
 
 // 登录
 exports.login = async (req, res) => {
-  // 查询数据库
   let dbBack = await User.findOne(req.body)
   if (!dbBack) {
     return res.status(402).json({ error: '邮箱或者密码不正确' })
@@ -23,12 +22,29 @@ exports.login = async (req, res) => {
   res.status(201).json(dbBack)
 }
 
-// 获取用户列表
-exports.userList = async (req, res) => {
-  res.send('/userList')
+// 修改用户
+exports.update = async (req, res) => {
+  console.log('---', req.body)
+  res.status(200).json({ data: '修改成功' })
 }
 
 // 删除用户
 exports.deleteUser = async (req, res) => {
-  res.send('/deleteUser')
+  const { userId } = req.params
+  const userInfo = await User.findById(userId)
+  if (!userInfo) {
+    return res.status(404).json({ error: '所删除的用户不存在' })
+  }
+  const dbBack = await User.deleteOne({ _id: userId })
+  if (dbBack.deletedCount > 0) {
+    return res.status(200).json({ data: '删除成功' })
+  } else {
+    return res.status(500).json({ error: '删除失败' })
+  }
+}
+
+// 获取用户列表
+exports.userList = async (req, res) => {
+  const dbBack = await User.find()
+  res.status(200).json({ data: dbBack })
 }
