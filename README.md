@@ -1,5 +1,11 @@
 ## 视频系统
 
+### 系统介绍
+基于Node.js实现的视频点播系统后端服务，主要包括以下功能：
+1. 用户管理（注册/登录/修改/删除）
+2. 视频管理（上传/展示/详情/删除）
+3. 交互体验（订阅频道/取消订阅/关注/粉丝/评论/删除评论/点赞视频/不喜欢视频）
+
 ### 文件目录结构
 ```md
 |-- videoSystem
@@ -16,14 +22,16 @@
     |   |-- index.js
     |   |-- userController.js
     |   |-- videoController.js
+    |   |-- vodController.js
     |-- middleware // 中间件的使用
     |   |-- validator // 负责校验的中间件
-    |       |-- errorBack.js // 错误返回
+    |       |-- errorBack.js // 错误处理
     |       |-- userValidator.js // 校验规则
     |-- model // 数据库模型
     |   |-- baseModel.js
     |   |-- index.js
     |   |-- userModel.js
+    |   |-- videoModel.js
     |-- router // 路由配置
     |   |-- index.js
     |   |-- user.js
