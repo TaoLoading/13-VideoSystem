@@ -24,7 +24,9 @@ exports.login = async (req, res) => {
 
 // 修改用户
 exports.update = async (req, res) => {
-  return res.status(200).json({ data: '修改成功' })
+  const id = req.user.userInfo._id
+  const dbBack = await User.findByIdAndUpdate(id, req.body, { new: true })
+  return res.status(200).json({ data: '修改成功', userInfo: dbBack })
 }
 
 // 删除用户
