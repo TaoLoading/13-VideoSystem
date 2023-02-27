@@ -43,9 +43,7 @@ module.exports.login = errorBack([
 module.exports.update = errorBack([
   body('email')
     .custom(async val => {
-      console.log('111', val)
       const emailValidate = await User.findOne({ email: val })
-      console.log('222', emailValidate)
       if (emailValidate) {
         return Promise.reject('邮箱已经被注册')
       }

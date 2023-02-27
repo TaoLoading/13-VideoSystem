@@ -8,7 +8,7 @@ exports.register = async (req, res) => {
   const user = dbBack.toJSON()
   // 删除返回值中的password
   delete user.password
-  res.status(201).json({ user })
+  return res.status(201).json({ user })
 }
 
 // 登录
@@ -19,13 +19,12 @@ exports.login = async (req, res) => {
   }
   dbBack = dbBack.toJSON()
   dbBack.token = await createToken(req.body)
-  res.status(201).json(dbBack)
+  return res.status(201).json(dbBack)
 }
 
 // 修改用户
 exports.update = async (req, res) => {
-  console.log('---', req.body)
-  res.status(200).json({ data: '修改成功' })
+  return res.status(200).json({ data: '修改成功' })
 }
 
 // 删除用户
@@ -46,5 +45,5 @@ exports.deleteUser = async (req, res) => {
 // 获取用户列表
 exports.userList = async (req, res) => {
   const dbBack = await User.find()
-  res.status(200).json({ data: dbBack })
+  return res.status(200).json({ data: dbBack })
 }

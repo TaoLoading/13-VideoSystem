@@ -24,14 +24,16 @@ module.exports.verifyToken = async (req, res, next) => {
   const token = tokenStr ? tokenStr.split('Bearer ')[1] : null
 
   if (!token) {
-    res.status(401).json({ error: '未传入token' })
+    // console.log('未传入token')
+    return res.status(401).json({ error: '未传入token' })
   }
   try {
     const userInfo = await verify(token, 'taoloading1999')
     req.user = userInfo
-    next()
+    // console.log('正常', userInfo)
+    return next()
   } catch (error) {
-    res.status(401).json({ error: '当前token无效' })
+    // console.log('当前token无效')
+    return res.status(401).json({ error: '当前token无效' })
   }
-  next()
 }
