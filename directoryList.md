@@ -26,7 +26,8 @@
     |   |-- index.js
     |   |-- user.js
     |   |-- video.js
-    |-- uploads // 上传的静态资源
-    |   |-- 2b66bff0c66882fb8b20b95a2f50f0f3.jpg
+    |-- upload // 存放上传的文件
+    |   |-- img // 上传的图片
+    |   |-- video // 上传的视频
     |-- utils // 工具函数
         |-- jwt.js

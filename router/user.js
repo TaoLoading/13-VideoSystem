@@ -5,13 +5,11 @@ const validator = require('../middleware/validator/userValidator')
 const { verifyToken } = require('../utils/jwt')
 
 const router = express.Router()
+
 // 配置文件上传的信息
-const upload = multer({ dest: 'uploads/' })
+const upload = multer({ dest: 'upload/img/' })
 
 router
-  .get('/', (req, res) => {
-    res.send('/user')
-  })
   // 注册
   .post('/register', validator.register, userController.register)
   // 登录
@@ -23,6 +21,6 @@ router
   // 查询用户信息
   .get('/list', verifyToken, userController.userList)
   // 上传用户头像
-  .post('/avatar', verifyToken, upload.single('avatar'), userController.avatar)
+  .post('/uploadAvatar', verifyToken, upload.single('avatar'), userController.uploadAvatar)
 
 module.exports = router
