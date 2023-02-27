@@ -70,11 +70,10 @@ exports.avatar = async (req, res) => {
   // 给文件重命名，加上后缀
   const fileArr = fileInfo.originalname.split('.')
   const fileType = fileArr[fileArr.length - 1]
-  rename(`./uploads/${fileInfo.filename}`, `./uploads/${fileInfo.filename}.${fileType}`)
-    .then(() => {
-      return res.status(200).json({ data: '上传成功', filename: `${fileInfo.filename}.${fileType}` })
-    })
-    .catch(err => {
-      return res.status(200).json({ msg: '上传失败', error: err })
-    })
+  try {
+    await rename(`./uploads/${fileInfo.filename}`, `./uploads/${fileInfo.filename}.${fileType}`)
+  } catch (error) {
+    return res.status(200).json({ msg: '上传失败', error: error })
+  }
+  return res.status(200).json({ data: '上传成功', filename: `${fileInfo.filename}.${fileType}` })
 }

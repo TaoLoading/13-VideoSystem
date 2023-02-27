@@ -4,16 +4,14 @@ const { mongoPath } = require('../config/config.default')
 
 const main = async () => {
   mongoose.set('strictQuery', false)
-  await mongoose.connect(mongoPath)
+  try {
+    await mongoose.connect(mongoPath)
+  } catch (error) {
+    console.log('连接失败，原因是：', error)
+  }
+  console.log('连接成功')
 }
-
 main()
-  .then(res => {
-    console.log('连接成功')
-  })
-  .catch(err => {
-    console.log('连接失败，原因是：', err)
-  })
 
 // 导出模型
 module.exports = {
