@@ -1,7 +1,7 @@
 const express = require('express')
 const multer = require('multer')
 const userController = require('../controller/userController')
-const validator = require('../middleware/validator/userValidator')
+const userValidator = require('../middleware/validator/userValidator')
 const { verifyToken } = require('../utils/jwt')
 
 const router = express.Router()
@@ -11,11 +11,11 @@ const upload = multer({ dest: 'upload/img/' })
 
 router
   // 注册
-  .post('/register', validator.register, userController.register)
+  .post('/register', userValidator.register, userController.register)
   // 登录
-  .post('/login', validator.login, userController.login)
+  .post('/login', userValidator.login, userController.login)
   // 修改用户
-  .put('/', verifyToken, validator.update, userController.update)
+  .put('/', verifyToken, userValidator.updateUser, userController.updateUser)
   // 删除用户
   .delete('/:userId', userController.deleteUser)
   // 查询用户信息

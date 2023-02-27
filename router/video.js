@@ -2,6 +2,7 @@ const express = require('express')
 const multer = require('multer')
 const videoController = require('../controller/videoController')
 const vodController = require('../controller/vodController')
+const videoValidator = require('../middleware/validator/videoValidator')
 const { verifyToken } = require('../utils/jwt')
 
 const router = express.Router()
@@ -18,5 +19,7 @@ router
   .delete('/', videoController.deleteVideo)
   // 上传视频
   .post('/uploadVideo', verifyToken, upload.single('video'), videoController.uploadVideo)
+  // 添加视频
+  .post('/addVideo', verifyToken, videoValidator.addVideo, videoController.addVideo)
 
 module.exports = router

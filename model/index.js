@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 const userModel = require('./userModel')
+const videoModel = require('./videoModel')
 const { mongoPath } = require('../config/config.default')
 
 const main = async () => {
@@ -15,5 +16,6 @@ main()
 
 // 导出模型
 module.exports = {
-  User: mongoose.model('User', userModel)
+  User: mongoose.model('User', userModel),
+  Video: mongoose.model('Video', videoModel)
 }

@@ -43,7 +43,7 @@ module.exports.login = errorBack([
 ])
 
 // 修改
-module.exports.update = errorBack([
+module.exports.updateUser = errorBack([
   body('password')
     .isLength({ min: 6 }).withMessage('密码不能小于6个字符').bail(),
   /* body('email')

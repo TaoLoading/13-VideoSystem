@@ -8,11 +8,15 @@ const rename = promisify(fs.rename)
 // 注册
 exports.register = async (req, res) => {
   const userModel = new User(req.body)
-  const dbBack = await userModel.save()
-  const user = dbBack.toJSON()
-  // 删除返回值中的password
-  delete user.password
-  return res.status(201).json({ user })
+  try {
+    const dbBack = await userModel.save()
+    const user = dbBack.toJSON()
+    // 删除返回值中的password
+    delete user.password
+    return res.status(201).json({ msg: '注册成功', user })
+  } catch (error) {
+    return res.status(500).json({ msg: '注册失败', error: error })
+  }
 }
 
 // 登录
@@ -27,7 +31,7 @@ exports.login = async (req, res) => {
 }
 
 // 修改用户
-exports.update = async (req, res) => {
+exports.updateUser = async (req, res) => {
   const id = req.user.userInfo._id
   const dbBack = await User.findByIdAndUpdate(id, req.body, { new: true })
   return res.status(200).json({ data: '修改成功', userInfo: dbBack })
