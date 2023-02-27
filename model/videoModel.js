@@ -7,12 +7,10 @@ const videoModel = new mongoose.Schema({
     required: true
   },
   description: {
-    type: String,
-    required: false
+    type: String
   },
   vodVideoId: {
-    type: String,
-    required: false
+    type: String
   },
   user: {
     type: mongoose.ObjectId,
@@ -20,8 +18,7 @@ const videoModel = new mongoose.Schema({
     ref: 'User' // 与userModel进行关联
   },
   cover: {
-    type: String,
-    required: false
+    type: String
   },
   commentCount: {
     type: Number,
