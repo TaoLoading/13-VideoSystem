@@ -1,5 +1,9 @@
+const fs = require('fs')
+const { promisify } = require('util')
 const { User } = require('../model/index')
 const { createToken } = require('../utils/jwt')
+
+const rename = promisify(fs.rename)
 
 // 注册
 exports.register = async (req, res) => {
@@ -48,4 +52,29 @@ exports.deleteUser = async (req, res) => {
 exports.userList = async (req, res) => {
   const dbBack = await User.find()
   return res.status(200).json({ data: dbBack })
+}
+
+// 上传用户头像
+exports.avatar = async (req, res) => {
+  const fileInfo = req.file
+  /* {
+    fieldname: 'avatar',
+    originalname: 'avatar.jpg',
+    encoding: '7bit',
+    mimetype: 'image/jpeg',
+    destination: 'uploads/',
+    filename: '915a2a84866cf5a3201de2cbeb3448f9',
+    path: 'uploads\\915a2a84866cf5a3201de2cbeb3448f9',
+    size: 138850
+  } */
+  // 给文件重命名，加上后缀
+  const fileArr = fileInfo.originalname.split('.')
+  const fileType = fileArr[fileArr.length - 1]
+  rename(`./uploads/${fileInfo.filename}`, `./uploads/${fileInfo.filename}.${fileType}`)
+    .then(() => {
+      return res.status(200).json({ data: '上传成功', filename: `${fileInfo.filename}.${fileType}` })
+    })
+    .catch(err => {
+      return res.status(200).json({ msg: '上传失败', error: err })
+    })
 }
