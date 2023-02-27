@@ -35,8 +35,8 @@ exports.uploadVideo = async (req, res) => {
   const fileType = fileArr[fileArr.length - 1]
   try {
     await rename(`./upload/video/${fileInfo.filename}`, `./upload/video/${fileInfo.filename}.${fileType}`)
+    return res.status(200).json({ data: '上传成功', filename: `${fileInfo.filename}.${fileType}` })
   } catch (error) {
     return res.status(500).json({ msg: '上传失败', error: error })
   }
-  return res.status(200).json({ data: '上传成功', filename: `${fileInfo.filename}.${fileType}` })
 }
