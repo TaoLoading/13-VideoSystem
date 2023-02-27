@@ -18,7 +18,7 @@ exports.login = async (req, res) => {
     return res.status(402).json({ error: '邮箱或者密码不正确' })
   }
   dbBack = dbBack.toJSON()
-  dbBack.token = await createToken(req.body)
+  dbBack.token = await createToken(dbBack)
   return res.status(201).json(dbBack)
 }
 
