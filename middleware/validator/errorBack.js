@@ -1,5 +1,5 @@
 /**
- * 用户相关校验的错误返回
+ * 用户相关校验的错误处理
  */
 
 const { validationResult } = require('express-validator')
