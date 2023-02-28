@@ -15,12 +15,12 @@ router
   // 登录
   .post('/login', userValidator.login, userController.login)
   // 修改用户
-  .put('/', verifyToken, userValidator.updateUser, userController.updateUser)
+  .put('/', verifyToken(), userValidator.updateUser, userController.updateUser)
   // 删除用户
   .delete('/:userId', userController.deleteUser)
   // 查询用户信息
-  .get('/getUserList', verifyToken, userController.getUserList)
+  .get('/getUserList', verifyToken(), userController.getUserList)
   // 上传用户头像
-  .post('/uploadAvatar', verifyToken, upload.single('avatar'), userController.uploadAvatar)
+  .post('/uploadAvatar', verifyToken(), upload.single('avatar'), userController.uploadAvatar)
 
 module.exports = router

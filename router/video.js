@@ -14,14 +14,14 @@ router
   // 获取视频列表
   .get('/getVideoList', videoController.getVideoList)
   // 获取视频详情
-  .get('/getVideoDetail/:videoId', videoController.getVideoDetail)
+  .get('/getVideoDetail/:videoId', verifyToken(false), videoController.getVideoDetail)
   // 获取vod视频上传凭证
   .get('/getVodKey', vodController.getVodKey)
   // 删除视频
   .delete('/', videoController.deleteVideo)
   // 上传视频
-  .post('/uploadVideo', verifyToken, upload.single('video'), videoController.uploadVideo)
+  .post('/uploadVideo', verifyToken(), upload.single('video'), videoController.uploadVideo)
   // 添加视频
-  .post('/addVideo', verifyToken, videoValidator.addVideo, videoController.addVideo)
+  .post('/addVideo', verifyToken(), videoValidator.addVideo, videoController.addVideo)
 
 module.exports = router

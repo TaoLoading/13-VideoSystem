@@ -20,7 +20,7 @@ module.exports.createToken = async userInfo => {
 
 /**
  * 校验token
- * @param isRequired 是否必须传入token
+ * @param isRequired 是否必须传入token，默认必传
  */
 module.exports.verifyToken = function (isRequired = true) {
   return async (req, res, next) => {
