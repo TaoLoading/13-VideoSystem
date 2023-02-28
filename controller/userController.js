@@ -21,13 +21,17 @@ exports.register = async (req, res) => {
 
 // 登录
 exports.login = async (req, res) => {
-  let dbBack = await User.findOne(req.body)
-  if (!dbBack) {
-    return res.status(402).json({ error: '邮箱或者密码不正确' })
+  try {
+    let loginInfo = await User.findOne(req.body)
+    if (!loginInfo) {
+      return res.status(402).json({ error: '邮箱或者密码不正确' })
+    }
+    loginInfo = loginInfo.toJSON()
+    loginInfo.token = await createToken(loginInfo)
+    return res.status(201).json({ msg: '登录成功', loginInfo })
+  } catch (error) {
+    return res.status(500).json({ msg: '登录失败', error: error })
   }
-  dbBack = dbBack.toJSON()
-  dbBack.token = await createToken(dbBack)
-  return res.status(201).json(dbBack)
 }
 
 // 修改用户
@@ -40,22 +44,34 @@ exports.updateUser = async (req, res) => {
 // 删除用户
 exports.deleteUser = async (req, res) => {
   const { userId } = req.params
-  const userInfo = await User.findById(userId)
-  if (!userInfo) {
-    return res.status(404).json({ error: '所删除的用户不存在' })
-  }
-  const dbBack = await User.deleteOne({ _id: userId })
-  if (dbBack.deletedCount > 0) {
-    return res.status(200).json({ data: '删除成功' })
-  } else {
+  try {
+    const userInfo = await User.findById(userId)
+    if (!userInfo) {
+      return res.status(404).json({ error: '所删除的用户不存在' })
+    }
+    const dbBack = await User.deleteOne({ _id: userId })
+    if (dbBack.deletedCount > 0) {
+      return res.status(200).json({ data: '删除成功' })
+    } else {
+      return res.status(500).json({ error: '删除失败' })
+    }
+  } catch (error) {
     return res.status(500).json({ error: '删除失败' })
   }
 }
 
 // 获取用户列表
-exports.userList = async (req, res) => {
-  const dbBack = await User.find()
-  return res.status(200).json({ data: dbBack })
+exports.getUserList = async (req, res) => {
+  const { pageNum = 1, pageSize = 10 } = req.query
+  try {
+    const list = await User.find()
+      .skip((pageNum - 1) * pageSize).limit(pageSize) // 分页
+      .sort({ createAt: -1 }) // 按创建时间倒序排列
+    const total = await User.countDocuments()
+    res.status(200).json({ list, total: total })
+  } catch (error) {
+    return res.status(500).json({ msg: '查询失败', error: error })
+  }
 }
 
 // 上传用户头像

@@ -12,7 +12,9 @@ const upload = multer({ dest: 'upload/video/' })
 
 router
   // 获取视频列表
-  .get('/lists', videoController.videoList)
+  .get('/getVideoList', videoController.getVideoList)
+  // 获取视频详情
+  .get('/getVideoDetail/:videoId', videoController.getVideoDetail)
   // 获取vod视频上传凭证
   .get('/getVodKey', vodController.getVodKey)
   // 删除视频

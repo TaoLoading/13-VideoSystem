@@ -5,8 +5,30 @@ const { Video } = require('../model/index')
 const rename = promisify(fs.rename)
 
 // 获取视频列表
-exports.videoList = async (req, res) => {
-  res.send('/videoList')
+exports.getVideoList = async (req, res) => {
+  const { pageNum = 1, pageSize = 10 } = req.query
+  try {
+    const list = await Video.find()
+      .skip((pageNum - 1) * pageSize).limit(pageSize) // 分页
+      .sort({ createAt: -1 }) // 按创建时间倒序排列
+      .populate('user', '_id username cover image') // 关联用户信息查询
+    const total = await Video.countDocuments()
+    res.status(200).json({ list, total: total })
+  } catch (error) {
+    return res.status(500).json({ msg: '查询失败', error: error })
+  }
+}
+
+// 获取视频详情
+exports.getVideoDetail = async (req, res) => {
+  const { videoId } = req.params
+  try {
+    const videoInfo = await Video.findById(videoId)
+      .populate('user', '_id username cover image')
+    res.status(200).json(videoInfo)
+  } catch (error) {
+    return res.status(500).json({ msg: '查询失败', error: error })
+  }
 }
 
 // 删除视频

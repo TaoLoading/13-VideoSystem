@@ -19,7 +19,7 @@ router
   // 删除用户
   .delete('/:userId', userController.deleteUser)
   // 查询用户信息
-  .get('/list', verifyToken, userController.userList)
+  .get('/getUserList', verifyToken, userController.getUserList)
   // 上传用户头像
   .post('/uploadAvatar', verifyToken, upload.single('avatar'), userController.uploadAvatar)
 
