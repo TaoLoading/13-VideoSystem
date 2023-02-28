@@ -18,22 +18,30 @@ module.exports.createToken = async userInfo => {
   return token
 }
 
-// 校验token
-module.exports.verifyToken = async (req, res, next) => {
-  const tokenStr = req.headers.authorization
-  const token = tokenStr ? tokenStr.split('Bearer ')[1] : null
+/**
+ * 校验token
+ * @param isRequired 是否必须传入token
+ */
+module.exports.verifyToken = function (isRequired = true) {
+  return async (req, res, next) => {
+    // 拿到token
+    const tokenStr = req.headers.authorization
+    const token = tokenStr ? tokenStr.split('Bearer ')[1] : null
 
-  if (!token) {
-    // console.log('未传入token')
-    return res.status(401).json({ error: '未传入token' })
-  }
-  try {
-    const userInfo = await verify(token, 'taoloading1999')
-    req.user = userInfo
-    // console.log('正常', userInfo)
-    return next()
-  } catch (error) {
-    // console.log('当前token无效')
-    return res.status(401).json({ error: '当前token无效' })
+    if (!token) {
+      // 判断是否需要token
+      if (isRequired) {
+        return res.status(401).json({ error: '未传入token' })
+      } else {
+        return next()
+      }
+    }
+    try {
+      const userInfo = await verify(token, 'taoloading1999')
+      req.user = userInfo
+      return next()
+    } catch (error) {
+      return res.status(401).json({ error: '当前token无效' })
+    }
   }
 }
