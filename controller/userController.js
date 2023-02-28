@@ -61,7 +61,7 @@ exports.deleteUser = async (req, res) => {
       return res.status(500).json({ error: '删除失败' })
     }
   } catch (error) {
-    return res.status(500).json({ error: '删除失败' })
+    return res.status(500).json({ msg: '删除失败', error: error })
   }
 }
 
@@ -202,17 +202,68 @@ exports.getChannel = async (req, res) => {
     }
   }
 
-  const channelInfo = await User.findById(channelId)
+  let channelInfo = await User.findById(channelId)
+  channelInfo = lodash.pick(channelInfo, [
+    '_id',
+    'username',
+    'image',
+    'cover',
+    'description',
+    'subscribeCount',
+    'fansCount'
+  ])
   return res.status(200).json({
-    ...lodash.pick(channelInfo, [
-      '_id',
-      'username',
-      'image',
-      'cover',
-      'description',
-      'subscribeCount',
-      'fansCount'
-    ]),
+    ...channelInfo,
     isSubscribed: isSubscribed
   })
+}
+
+// 获取订阅列表
+exports.getSubscribeList = async (req, res) => {
+  const userId = req.params.userId
+  try {
+    let subscribeList = await Subscribe.find({
+      user: userId
+    }).populate('subscriber')
+    subscribeList = subscribeList.map(item => {
+      // 筛选被订阅频道的信息
+      return lodash.pick(item.subscriber, [
+        '_id',
+        'username',
+        'image',
+        'cover',
+        'description',
+        'subscribeCount',
+        'fansCount'
+      ])
+    })
+    return res.status(201).json({ msg: '查询成功', subscribeList: subscribeList })
+  } catch (error) {
+    return res.status(500).json({ msg: '查询失败', error: error })
+  }
+}
+
+// 获取粉丝列表
+exports.getFansList = async (req, res) => {
+  const userId = req.params.userId
+  try {
+    let fansList = await Subscribe.find({
+      subscriber: userId
+    }).populate('user')
+    fansList = fansList.map(item => {
+      // 筛选粉丝的信息
+      return lodash.pick(item.user, [
+        '_id',
+        'username',
+        'image',
+        'cover',
+        'description',
+        'subscribeCount',
+        'fansCount'
+      ])
+    })
+    return res.status(201).json({ msg: '查询成功', fansList: fansList })
+  } catch (error) {
+    return res.status(500).json({ msg: '查询失败', error: error })
+  }
 }

@@ -26,7 +26,11 @@ router
   .get('/subscribe/:subscriberId', verifyToken(), userController.subscribe)
   // 取消订阅
   .get('/unsubscribe/:subscriberId', verifyToken(), userController.unsubscribe)
-  // 查看频道信息
+  // 获取频道信息
   .get('/getChannel/:channelId', verifyToken(false), userController.getChannel)
+  // 获取订阅列表
+  .get('/getSubscribeList/:userId', userController.getSubscribeList)
+  // 获取粉丝列表
+  .get('/getFansList/:userId', userController.getFansList)
 
 module.exports = router
