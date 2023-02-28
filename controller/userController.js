@@ -1,5 +1,6 @@
 const fs = require('fs')
 const { promisify } = require('util')
+const lodash = require('lodash')
 const { User, Subscribe } = require('../model/index')
 const { createToken } = require('../utils/jwt')
 
@@ -37,8 +38,12 @@ exports.login = async (req, res) => {
 // 修改用户
 exports.updateUser = async (req, res) => {
   const id = req.user.userInfo._id
-  const dbBack = await User.findByIdAndUpdate(id, req.body, { new: true })
-  return res.status(200).json({ data: '修改成功', userInfo: dbBack })
+  try {
+    const userInfo = await User.findByIdAndUpdate(id, req.body, { new: true })
+    return res.status(201).json({ data: '修改成功', userInfo: userInfo })
+  } catch (error) {
+    return res.status(500).json({ msg: '修改成功', error: error })
+  }
 }
 
 // 删除用户
@@ -179,4 +184,35 @@ exports.unsubscribe = async (req, res) => {
   } catch (error) {
     return res.status(401).json({ msg: '取消订阅失败', error: error })
   }
+}
+
+// 查看频道信息
+exports.getChannel = async (req, res) => {
+  let isSubscribed = false
+  const channelId = req.params.channelId
+  if (req.user) {
+    const userId = req.user.userInfo._id
+    // 查询当前登录的用户是否订阅该频道
+    const record = await Subscribe.findOne({
+      user: userId,
+      subscriber: channelId
+    })
+    if (record) {
+      isSubscribed = true
+    }
+  }
+
+  const channelInfo = await User.findById(channelId)
+  return res.status(200).json({
+    ...lodash.pick(channelInfo, [
+      '_id',
+      'username',
+      'image',
+      'cover',
+      'description',
+      'subscribeCount',
+      'fansCount'
+    ]),
+    isSubscribed: isSubscribed
+  })
 }
