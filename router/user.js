@@ -22,5 +22,9 @@ router
   .get('/getUserList', verifyToken(), userController.getUserList)
   // 上传用户头像
   .post('/uploadAvatar', verifyToken(), upload.single('avatar'), userController.uploadAvatar)
+  // 订阅
+  .get('/subscribe/:subscriberId', verifyToken(), userController.subscribe)
+  // 取消订阅
+  .get('/unsubscribe/:subscriberId', verifyToken(), userController.unsubscribe)
 
 module.exports = router

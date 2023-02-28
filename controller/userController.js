@@ -1,6 +1,6 @@
 const fs = require('fs')
 const { promisify } = require('util')
-const { User } = require('../model/index')
+const { User, Subscribe } = require('../model/index')
 const { createToken } = require('../utils/jwt')
 
 const rename = promisify(fs.rename)
@@ -95,5 +95,88 @@ exports.uploadAvatar = async (req, res) => {
     return res.status(200).json({ data: '上传成功', filename: `${fileInfo.filename}.${fileType}` })
   } catch (error) {
     return res.status(200).json({ msg: '上传失败', error: error })
+  }
+}
+
+// 订阅
+exports.subscribe = async (req, res) => {
+  const userId = req.user.userInfo._id
+  // 被订阅者id
+  const subscriberId = req.params.subscriberId
+
+  // 禁止订阅自己
+  if (userId === subscriberId) {
+    return res.status(401).json({ msg: '订阅失败', error: '不可订阅自己的频道' })
+  }
+
+  try {
+    // 查看是否订阅
+    const record = await Subscribe.findOne({
+      user: userId,
+      subscriber: subscriberId
+    })
+    if (!record) {
+      // 保存订阅记录
+      await new Subscribe({
+        user: userId,
+        subscriber: subscriberId
+      }).save()
+
+      // 订阅者订阅数+1
+      const user = await User.findById(userId)
+      user.subscribeCount++
+      await user.save()
+
+      // 被订阅者粉丝数+1
+      const subscriber = await User.findById(subscriberId)
+      subscriber.fansCount++
+      await subscriber.save()
+
+      return res.status(200).json({ msg: '订阅成功' })
+    } else {
+      return res.status(401).json({ msg: '订阅失败', error: '已经订阅过当前频道' })
+    }
+  } catch (error) {
+    return res.status(401).json({ msg: '订阅失败', error: error })
+  }
+}
+
+// 取消订阅
+exports.unsubscribe = async (req, res) => {
+  const userId = req.user.userInfo._id
+  // 被取消订阅者id
+  const subscriberId = req.params.subscriberId
+
+  // 禁止取消订阅自己
+  if (userId === subscriberId) {
+    return res.status(401).json({ msg: '订阅失败', error: '不可订阅自己的频道' })
+  }
+
+  try {
+    // 查看是否订阅
+    const record = await Subscribe.findOne({
+      user: userId,
+      subscriber: subscriberId
+    })
+    if (record) {
+      // 删除订阅记录
+      await record.remove()
+
+      // 订阅者订阅数-1
+      const user = await User.findById(userId)
+      user.subscribeCount--
+      await user.save()
+
+      // 被订阅者粉丝数-1
+      const subscriber = await User.findById(subscriberId)
+      subscriber.fansCount--
+      await subscriber.save()
+
+      return res.status(200).json({ msg: '取消订阅成功' })
+    } else {
+      return res.status(401).json({ msg: '取消订阅失败', error: '未订阅当前频道' })
+    }
+  } catch (error) {
+    return res.status(401).json({ msg: '取消订阅失败', error: error })
   }
 }
