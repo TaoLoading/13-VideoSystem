@@ -3,6 +3,7 @@ const { mongoPath } = require('../config/config.default')
 const userModel = require('./userModel')
 const videoModel = require('./videoModel')
 const subscribeModel = require('./subscribeModel')
+const commentModel = require('./commentModel')
 
 const main = async () => {
   mongoose.set('strictQuery', false)
@@ -19,5 +20,6 @@ main()
 module.exports = {
   User: mongoose.model('User', userModel),
   Video: mongoose.model('Video', videoModel),
-  Subscribe: mongoose.model('Subscribe', subscribeModel)
+  Subscribe: mongoose.model('Subscribe', subscribeModel),
+  Comment: mongoose.model('Comment', commentModel)
 }

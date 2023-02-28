@@ -23,5 +23,7 @@ router
   .post('/uploadVideo', verifyToken(), upload.single('video'), videoController.uploadVideo)
   // 添加视频
   .post('/addVideo', verifyToken(), videoValidator.addVideo, videoController.addVideo)
+  // 评论视频
+  .post('/comment/:videoId', verifyToken(), videoController.comment)
 
 module.exports = router

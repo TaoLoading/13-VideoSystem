@@ -1,6 +1,6 @@
 const fs = require('fs')
 const { promisify } = require('util')
-const { Video } = require('../model/index')
+const { Video, Comment } = require('../model/index')
 
 const rename = promisify(fs.rename)
 
@@ -43,7 +43,7 @@ exports.addVideo = async (req, res) => {
   const videoModel = new Video(req.body)
   try {
     const dbBack = await videoModel.save()
-    return res.status(201).json({ msg: '添加成功', dbBack })
+    return res.status(200).json({ msg: '添加成功', dbBack })
   } catch (error) {
     return res.status(500).json({ msg: '添加失败', error: error })
   }
@@ -60,5 +60,30 @@ exports.uploadVideo = async (req, res) => {
     return res.status(200).json({ data: '上传成功', filename: `${fileInfo.filename}.${fileType}` })
   } catch (error) {
     return res.status(500).json({ msg: '上传失败', error: error })
+  }
+}
+
+// 评论视频
+exports.comment = async (req, res) => {
+  const { videoId } = req.params
+  try {
+    const video = await Video.findById(videoId)
+    if (video) {
+      const { content } = req.body
+      // 保存评论
+      await new Comment({
+        content: content,
+        video: videoId,
+        user: req.user.userInfo._id
+      }).save()
+      // 评论数+1
+      video.commentCount++
+      await video.save()
+      return res.status(200).json({ msg: '评论成功' })
+    } else {
+      return res.status(404).json({ msg: '评论失败', error: '当前视频不存在' })
+    }
+  } catch (error) {
+    return res.status(500).json({ msg: '评论失败', error: error })
   }
 }

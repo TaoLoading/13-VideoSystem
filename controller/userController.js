@@ -25,11 +25,11 @@ exports.login = async (req, res) => {
   try {
     let loginInfo = await User.findOne(req.body)
     if (!loginInfo) {
-      return res.status(402).json({ error: '邮箱或者密码不正确' })
+      return res.status(401).json({ error: '邮箱或者密码不正确' })
     }
     loginInfo = loginInfo.toJSON()
     loginInfo.token = await createToken(loginInfo)
-    return res.status(201).json({ msg: '登录成功', loginInfo })
+    return res.status(200).json({ msg: '登录成功', loginInfo })
   } catch (error) {
     return res.status(500).json({ msg: '登录失败', error: error })
   }
@@ -42,7 +42,7 @@ exports.updateUser = async (req, res) => {
     const userInfo = await User.findByIdAndUpdate(id, req.body, { new: true })
     return res.status(201).json({ data: '修改成功', userInfo: userInfo })
   } catch (error) {
-    return res.status(500).json({ msg: '修改成功', error: error })
+    return res.status(500).json({ msg: '修改失败', error: error })
   }
 }
 
@@ -58,7 +58,7 @@ exports.deleteUser = async (req, res) => {
     if (dbBack.deletedCount > 0) {
       return res.status(200).json({ data: '删除成功' })
     } else {
-      return res.status(500).json({ error: '删除失败' })
+      return res.status(404).json({ error: '删除失败' })
     }
   } catch (error) {
     return res.status(500).json({ msg: '删除失败', error: error })
@@ -97,9 +97,9 @@ exports.uploadAvatar = async (req, res) => {
   const fileType = fileArr[fileArr.length - 1]
   try {
     await rename(`./upload/img/${fileInfo.filename}`, `./upload/img/${fileInfo.filename}.${fileType}`)
-    return res.status(200).json({ data: '上传成功', filename: `${fileInfo.filename}.${fileType}` })
+    return res.status(201).json({ data: '上传成功', filename: `${fileInfo.filename}.${fileType}` })
   } catch (error) {
-    return res.status(200).json({ msg: '上传失败', error: error })
+    return res.status(500).json({ msg: '上传失败', error: error })
   }
 }
 
@@ -111,7 +111,7 @@ exports.subscribe = async (req, res) => {
 
   // 禁止订阅自己
   if (userId === subscriberId) {
-    return res.status(401).json({ msg: '订阅失败', error: '不可订阅自己的频道' })
+    return res.status(403).json({ msg: '订阅失败', error: '不可订阅自己的频道' })
   }
 
   try {
@@ -139,10 +139,10 @@ exports.subscribe = async (req, res) => {
 
       return res.status(200).json({ msg: '订阅成功' })
     } else {
-      return res.status(401).json({ msg: '订阅失败', error: '已经订阅过当前频道' })
+      return res.status(403).json({ msg: '订阅失败', error: '已经订阅过当前频道' })
     }
   } catch (error) {
-    return res.status(401).json({ msg: '订阅失败', error: error })
+    return res.status(500).json({ msg: '订阅失败', error: error })
   }
 }
 
@@ -154,7 +154,7 @@ exports.unsubscribe = async (req, res) => {
 
   // 禁止取消订阅自己
   if (userId === subscriberId) {
-    return res.status(401).json({ msg: '订阅失败', error: '不可订阅自己的频道' })
+    return res.status(403).json({ msg: '订阅失败', error: '不可订阅自己的频道' })
   }
 
   try {
@@ -179,10 +179,10 @@ exports.unsubscribe = async (req, res) => {
 
       return res.status(200).json({ msg: '取消订阅成功' })
     } else {
-      return res.status(401).json({ msg: '取消订阅失败', error: '未订阅当前频道' })
+      return res.status(403).json({ msg: '取消订阅失败', error: '未订阅当前频道' })
     }
   } catch (error) {
-    return res.status(401).json({ msg: '取消订阅失败', error: error })
+    return res.status(500).json({ msg: '取消订阅失败', error: error })
   }
 }
 
@@ -190,32 +190,36 @@ exports.unsubscribe = async (req, res) => {
 exports.getChannel = async (req, res) => {
   let isSubscribed = false
   const channelId = req.params.channelId
-  if (req.user) {
-    const userId = req.user.userInfo._id
-    // 查询当前登录的用户是否订阅该频道
-    const record = await Subscribe.findOne({
-      user: userId,
-      subscriber: channelId
-    })
-    if (record) {
-      isSubscribed = true
+  try {
+    if (req.user) {
+      const userId = req.user.userInfo._id
+      // 查询当前登录的用户是否订阅该频道
+      const record = await Subscribe.findOne({
+        user: userId,
+        subscriber: channelId
+      })
+      if (record) {
+        isSubscribed = true
+      }
     }
-  }
 
-  let channelInfo = await User.findById(channelId)
-  channelInfo = lodash.pick(channelInfo, [
-    '_id',
-    'username',
-    'image',
-    'cover',
-    'description',
-    'subscribeCount',
-    'fansCount'
-  ])
-  return res.status(200).json({
-    ...channelInfo,
-    isSubscribed: isSubscribed
-  })
+    let channelInfo = await User.findById(channelId)
+    channelInfo = lodash.pick(channelInfo, [
+      '_id',
+      'username',
+      'image',
+      'cover',
+      'description',
+      'subscribeCount',
+      'fansCount'
+    ])
+    return res.status(200).json({
+      ...channelInfo,
+      isSubscribed: isSubscribed
+    })
+  } catch (error) {
+    return res.status(500).json({ msg: '查询失败', error: error })
+  }
 }
 
 // 获取订阅列表
@@ -237,7 +241,7 @@ exports.getSubscribeList = async (req, res) => {
         'fansCount'
       ])
     })
-    return res.status(201).json({ msg: '查询成功', subscribeList: subscribeList })
+    return res.status(200).json({ msg: '查询成功', subscribeList: subscribeList })
   } catch (error) {
     return res.status(500).json({ msg: '查询失败', error: error })
   }
@@ -262,7 +266,7 @@ exports.getFansList = async (req, res) => {
         'fansCount'
       ])
     })
-    return res.status(201).json({ msg: '查询成功', fansList: fansList })
+    return res.status(200).json({ msg: '查询成功', fansList: fansList })
   } catch (error) {
     return res.status(500).json({ msg: '查询失败', error: error })
   }
