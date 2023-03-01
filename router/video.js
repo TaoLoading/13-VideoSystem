@@ -18,7 +18,7 @@ router
   // 获取vod视频上传凭证
   .get('/getVodKey', vodController.getVodKey)
   // 删除视频
-  .delete('/', videoController.deleteVideo)
+  .delete('/:videoId', verifyToken(), videoController.deleteVideo)
   // 上传视频
   .post('/uploadVideo', verifyToken(), upload.single('video'), videoController.uploadVideo)
   // 添加视频

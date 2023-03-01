@@ -33,7 +33,21 @@ exports.getVideoDetail = async (req, res) => {
 
 // 删除视频
 exports.deleteVideo = async (req, res) => {
-  res.send('/deleteVideo')
+  const { videoId } = req.params
+  try {
+    const videoInfo = await Video.findById(videoId)
+    if (!videoInfo) {
+      return res.status(404).json({ error: '所删除的视频不存在' })
+    }
+    const dbBack = await Video.deleteOne({ _id: videoId })
+    if (dbBack.deletedCount > 0) {
+      return res.status(200).json({ data: '删除成功' })
+    } else {
+      return res.status(404).json({ error: '删除失败' })
+    }
+  } catch (error) {
+    return res.status(500).json({ msg: '删除失败', error: error })
+  }
 }
 
 // 添加视频
