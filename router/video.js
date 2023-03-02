@@ -25,5 +25,9 @@ router
   .post('/addVideo', verifyToken(), videoValidator.addVideo, videoController.addVideo)
   // 评论视频
   .post('/comment/:videoId', verifyToken(), videoController.comment)
+  // 获取视频评论
+  .get('/getComment/:videoId', videoController.getComment)
+  // 删除视频
+  .delete('/comment/:commentId', verifyToken(), videoController.deleteComment)
 
 module.exports = router
