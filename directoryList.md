@@ -5,6 +5,8 @@
     |-- package.json
     |-- README.md
     |-- yarn.lock
+    |-- .vscode
+    |   |-- settings.json
     |-- config // 配置信息
     |   |-- config.default.js
     |-- controller // 接口的逻辑处理
@@ -22,6 +24,7 @@
     |   |-- index.js
     |   |-- subscribeModel.js
     |   |-- userModel.js
+    |   |-- videoLikeModel.js
     |   |-- videoModel.js
     |-- router // 路由配置
     |   |-- index.js

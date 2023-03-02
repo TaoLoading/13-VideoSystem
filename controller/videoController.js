@@ -1,6 +1,6 @@
 const fs = require('fs')
 const { promisify } = require('util')
-const { Video, Comment } = require('../model/index')
+const { Video, Comment, VideoLike } = require('../model/index')
 
 const rename = promisify(fs.rename)
 
@@ -124,9 +124,6 @@ exports.getComment = async (req, res) => {
 exports.deleteComment = async (req, res) => {
   const { commentId } = req.params
   const userId = req.user.userInfo._id
-  console.log('commentId', commentId)
-  console.log('userId', userId)
-
   try {
     const commentInfo = await Comment.findById(commentId)
     const videoId = commentInfo.video
@@ -150,5 +147,52 @@ exports.deleteComment = async (req, res) => {
     return res.status(200).json({ msg: '删除成功' })
   } catch (error) {
     return res.status(500).json({ msg: '删除失败', error: error })
+  }
+}
+
+// 点赞/取消点赞/不喜欢视频
+exports.likeVideo = async (req, res) => {
+  const { videoId } = req.params
+  // isLike用于区别进行那种操作的标记。1为点赞，0为取消点赞，-1为不喜欢
+  const { isLike } = req.body
+  const userId = req.user.userInfo._id
+  try {
+    const videoInfo = await Video.findById(videoId)
+    if (!videoInfo) {
+      return res.status(404).json({ msg: '操作失败', error: '当前视频不存在' })
+    }
+
+    const likeInfo = await VideoLike.findOne({
+      user: userId,
+      video: videoId
+    })
+    console.log('likeInfo', likeInfo)
+    // 操作
+    if (likeInfo) {
+      console.log('likeInfo.isLike', likeInfo.isLike)
+      console.log('isLike', isLike)
+      likeInfo.isLike = isLike
+      await likeInfo.save()
+    } else {
+      await new VideoLike({
+        user: userId,
+        video: videoId,
+        isLike: isLike
+      }).save()
+    }
+
+    // 统计数量
+    videoInfo.likeCount = await VideoLike.countDocuments({
+      video: videoId,
+      isLike: 1
+    })
+    videoInfo.dislikeCount = await VideoLike.countDocuments({
+      video: videoId,
+      isLike: -1
+    })
+    await videoInfo.save()
+    return res.status(200).json({ msg: '操作成功' })
+  } catch (error) {
+    return res.status(500).json({ msg: '操作失败', error: error })
   }
 }

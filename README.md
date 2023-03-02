@@ -4,7 +4,7 @@
 基于Node.js实现的视频系统后端服务，主要包括以下功能：
 1. 用户管理（注册/登录/修改/删除）
 2. 视频管理（上传/展示/详情/删除）
-3. 交互体验（订阅频道/取消订阅/粉丝/评论/删除评论/点赞视频/不喜欢视频）
+3. 交互体验（订阅频道/取消订阅/粉丝/评论/删除评论/点赞/取消点赞/不喜欢视频）
 
 ### 文件目录结构
 ```md
@@ -15,6 +15,8 @@
     |-- package.json
     |-- README.md
     |-- yarn.lock
+    |-- .vscode
+    |   |-- settings.json
     |-- config // 配置信息
     |   |-- config.default.js
     |-- controller // 接口的逻辑处理
@@ -32,6 +34,7 @@
     |   |-- index.js
     |   |-- subscribeModel.js
     |   |-- userModel.js
+    |   |-- videoLikeModel.js
     |   |-- videoModel.js
     |-- router // 路由配置
     |   |-- index.js

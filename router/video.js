@@ -29,5 +29,7 @@ router
   .get('/getComment/:videoId', videoController.getComment)
   // 删除视频
   .delete('/comment/:commentId', verifyToken(), videoController.deleteComment)
+  // 点赞/取消点赞/不喜欢视频
+  .post('/likeVideo/:videoId', verifyToken(), videoController.likeVideo)
 
 module.exports = router
