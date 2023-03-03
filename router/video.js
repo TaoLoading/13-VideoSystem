@@ -31,5 +31,7 @@ router
   .delete('/comment/:commentId', verifyToken(), videoController.deleteComment)
   // 点赞/取消点赞/不喜欢视频
   .post('/likeVideo/:videoId', verifyToken(), videoController.likeVideo)
+  // 获取喜欢的视频列表
+  .get('/likeList', verifyToken(), videoController.likeList)
 
 module.exports = router

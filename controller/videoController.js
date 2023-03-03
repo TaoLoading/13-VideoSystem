@@ -26,6 +26,39 @@ exports.getVideoDetail = async (req, res) => {
   try {
     const videoInfo = await Video.findById(videoId)
       .populate('user', '_id username cover image')
+
+    // 已登录时查看对当前视频的交互
+    const userId = req.user?.userInfo?._id
+    videoInfo = videoInfo.toJSON()
+    videoInfo.isLike = false
+    videoInfo.isDislike = false
+    if (userId) {
+      const likeInfo = await VideoLike.findOne({
+        user: userId,
+        video: videoId,
+        isLike: 1
+      })
+      if (likeInfo) {
+        videoInfo.isLike = true
+      }
+
+      const dislikeInfo = await VideoLike.findOne({
+        user: userId,
+        video: videoId,
+        isLike: -1
+      })
+      if (dislikeInfo) {
+        videoInfo.isDislike = true
+      }
+
+      const commentInfo = await Comment.findOne({
+        video: videoId,
+        user: userId
+      })
+      if (commentInfo) {
+        videoInfo.comment = commentInfo.content
+      }
+    }
     res.status(200).json(videoInfo)
   } catch (error) {
     return res.status(500).json({ msg: '查询失败', error: error })
@@ -166,11 +199,8 @@ exports.likeVideo = async (req, res) => {
       user: userId,
       video: videoId
     })
-    console.log('likeInfo', likeInfo)
     // 操作
     if (likeInfo) {
-      console.log('likeInfo.isLike', likeInfo.isLike)
-      console.log('isLike', isLike)
       likeInfo.isLike = isLike
       await likeInfo.save()
     } else {
@@ -194,5 +224,29 @@ exports.likeVideo = async (req, res) => {
     return res.status(200).json({ msg: '操作成功' })
   } catch (error) {
     return res.status(500).json({ msg: '操作失败', error: error })
+  }
+}
+
+// 获取喜欢的视频列表
+exports.likeList = async (req, res) => {
+  const { pageNum = 1, pageSize = 10 } = req.query
+  console.log('---', pageNum)
+  const userId = req.user.userInfo._id
+  try {
+    const videoList = await VideoLike
+      .find({
+        isLike: 1,
+        user: userId
+      })
+      .skip((pageNum - 1) * pageSize)
+      .limit(pageSize)
+      .populate('video', '_id title user')
+    const total = await VideoLike.countDocuments({
+      isLike: 1,
+      user: userId
+    })
+    return res.status(200).json({ videoList, total: total })
+  } catch (error) {
+    return res.status(500).json({ msg: '查询失败', error: error })
   }
 }
