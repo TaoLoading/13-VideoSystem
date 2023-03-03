@@ -139,7 +139,7 @@ exports.comment = async (req, res) => {
 // 获取视频评论
 exports.getComment = async (req, res) => {
   const { videoId } = req.params
-  const { pageNum = 1, pageSize = 10 } = req.body
+  const { pageNum = 1, pageSize = 10 } = req.query
   try {
     const comments = await Comment
       .find({ video: videoId })

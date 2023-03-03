@@ -225,10 +225,15 @@ exports.getChannel = async (req, res) => {
 // 获取订阅列表
 exports.getSubscribeList = async (req, res) => {
   const userId = req.params.userId
+  const { pageNum = 1, pageSize = 10 } = req.query
   try {
-    let subscribeList = await Subscribe.find({
-      user: userId
-    }).populate('subscriber')
+    let subscribeList = await Subscribe
+      .find({
+        user: userId
+      })
+      .skip((pageNum - 1) * pageSize)
+      .limit(pageSize)
+      .populate('subscriber')
     subscribeList = subscribeList.map(item => {
       // 筛选被订阅频道的信息
       return lodash.pick(item.subscriber, [
@@ -250,10 +255,15 @@ exports.getSubscribeList = async (req, res) => {
 // 获取粉丝列表
 exports.getFansList = async (req, res) => {
   const userId = req.params.userId
+  const { pageNum = 1, pageSize = 10 } = req.query
   try {
-    let fansList = await Subscribe.find({
-      subscriber: userId
-    }).populate('user')
+    let fansList = await Subscribe
+      .find({
+        subscriber: userId
+      })
+      .skip((pageNum - 1) * pageSize)
+      .limit(pageSize)
+      .populate('user')
     fansList = fansList.map(item => {
       // 筛选粉丝的信息
       return lodash.pick(item.user, [
